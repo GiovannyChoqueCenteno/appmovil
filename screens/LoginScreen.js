@@ -6,12 +6,29 @@ import { Image } from 'expo-image'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 import { StatusBar } from 'expo-status-bar'
+import clientAxios from '../api/clientAxios'
 
 
 
 const LoginScreen = () => {
     const theme = useTheme()
+    const [loginId, setLoginId] = useState("")
+    const [pass, setPass] = useState("")
+
+
     const [showPassword, setShowPassword] = useState(false)
+
+    const handlePress = async () => {
+        try {
+            const res = await clientAxios.post("user", {
+                loginId,pass
+            })
+            console.log(res.data)
+        } catch (e) {
+            console.log(JSON.stringify(e))
+        }
+    }
+
     return (
 
         <View style={{
@@ -34,17 +51,16 @@ const LoginScreen = () => {
                         }
                     } contentFit='contain' />
                 </View>
-                <Card style={styles.formContainer}>
-                    <TextInput autoCapitalize='none' left={<TextInput.Icon icon={"account"} />} mode='outlined' label={"Usuario"} style={styles.input} />
-                    <TextInput autoCapitalize='none' left={<TextInput.Icon icon={"lock"} />} right={<TextInput.Icon onPress={() => setShowPassword(val => !val)} icon={showPassword ? "eye" : "eye-off"} />} mode='outlined' label={"Password"} style={styles.input} secureTextEntry={!showPassword} />
-                    <Button style={
-                        {
-                            alignSelf: "center",
-                            width: 100
-                        }
-                    } mode='contained'>
-                        Aceptar
-                    </Button>
+                <Card style={styles.cardContainer}>
+                    <View style={
+                        styles.formContainer
+                    } >
+                        <TextInput name="loginId" onChangeText={setLoginId} autoCapitalize='none' left={<TextInput.Icon icon={"account"} />} mode='outlined' label={"Usuario"} style={styles.input} />
+                        <TextInput name="pass" onChangeText={setPass} autoCapitalize='none' left={<TextInput.Icon icon={"lock"} />} right={<TextInput.Icon onPress={() => setShowPassword(val => !val)} icon={showPassword ? "eye" : "eye-off"} />} mode='outlined' label={"Password"} style={styles.input} secureTextEntry={!showPassword} />
+                        <Button onPress={handlePress} mode='contained'>
+                            Aceptar
+                        </Button>
+                    </View>
                 </Card>
             </View>
             <Image source={require("../assets/syc_icon.png")} style={
@@ -72,8 +88,10 @@ const styles = StyleSheet.create({
         width: wp(70),
         height: 55
     },
+    cardContainer: {
+        padding: 30,
+    },
     formContainer: {
-        padding : 20,
         gap: 10
     }
 })
